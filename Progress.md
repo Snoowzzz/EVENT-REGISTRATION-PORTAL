@@ -1,4 +1,3 @@
-
 # 📝 Development Log — Event Registration Portal
 
 Tracking progress across sessions for continuity if tools/systems change.
@@ -79,6 +78,23 @@ Tracking progress across sessions for continuity if tools/systems change.
 
 ---
 
+## Session 5 — Frontend Build
+
+**Completed:**
+
+- Created `templates/index.html`, added `render_template()` route for `/`
+- Built event cards UI: live seat counts, progress bars, open/full badges
+- Wired to real backend — `fetch('/api/events')` on load, `fetch('/register/<id>', {method: 'POST'})` on registration
+- Added confirmation modal before registering, loading spinner on the button during the request, toast notifications for success/error
+- Expanded `EVENTS` from 2 to 6 entries (kept IDs 1 and 2 unchanged — pinned by existing tests)
+- Visual polish pass: Inter font, custom color theme, card hover states, animated progress bar transitions
+- Added a live stats summary bar (total events, total seats, seats remaining) and an empty-state fallback for zero events
+- Fixed a JS bug where `renderStats` was defined but never called (function existed, nothing invoked it — no console error, just a silently empty stats bar)
+
+**Key decision:** Frontend is a thin client only — it holds no state of its own and always re-fetches from `/api/events` after every action, so the UI can never drift from actual server state.
+
+**Logical breakthrough:** Learned to catch "defined but never called" bugs — the most dangerous kind since there's no error, just missing behavior. Fix: check every function invocation against its definition, not just that the code runs without crashing.
+
 ## Current State
 
 | Component              | Status                       |
@@ -88,16 +104,15 @@ Tracking progress across sessions for continuity if tools/systems change.
 | Lint (flake8)          | ✅ Clean                     |
 | CI pipeline            | ✅ Live, green on every push |
 | Deployment             | ✅ Live on Render            |
+| Frontend               | ✅ Done, polished            |
 | README                 | ✅ Complete, polished        |
 
 ---
 
 ## Upcoming / Not Started
 
-- [ ] Optional: HTML front page (currently API-only, JSON responses)
-- [ ] Optional: SQLite persistence (only if rubric explicitly requires it — not currently required)
-- [ ] Swap `<repo-url>` placeholder in README's local-setup section for actual clone URL, if not already done
+None — project scope complete.
 
 ---
 
-**Last updated:** Sep 25, 2026
+**Last updated:** Sep 26, 2026
