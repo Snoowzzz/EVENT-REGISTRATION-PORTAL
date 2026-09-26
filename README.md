@@ -12,7 +12,7 @@
 
 **A lightweight, fully-tested, auto-deploying REST API for event registration and real-time seat tracking.**
 
-[🔗 Live API](https://event-registration-portal-ygqa.onrender.com) · [📖 API Reference](#-api-reference) · [🚀 Quick Start](#-running-locally)
+[🔗 Live Demo](https://event-registration-portal-ygqa.onrender.com) · [📖 API Reference](#-api-reference) · [🚀 Quick Start](#-running-locally)
 
 </div>
 
@@ -93,6 +93,19 @@ Registers one participant, decrementing `seats_left` by 1.
 > **Why 400 vs 404?** A full event is a *valid ID, business-rule rejection* (400). A missing event is a *client addressing error* (404). Deliberately not collapsed into one code.
 
 ---
+## 🖥️ Frontend
+
+A lightweight, dependency-free UI lives at the root route (`/`), served via Flask's `render_template()`.
+
+**Features:**
+- Live event cards with real-time seat availability and progress bars
+- A summary stats bar (total events, total seats, seats remaining)
+- Confirmation modal before registering — no accidental clicks
+- Loading state on the Register button while the request is in flight
+- Toast notifications for success/error feedback
+- Full/open states handled visually, not just via raw JSON
+
+Built with plain HTML, CSS, and vanilla JavaScript — no framework, no build step. All data comes from the same `/api/events` and `/register/<id>` endpoints documented above; the frontend is a thin client, not a separate source of truth.
 
 ## 🚀 Running Locally
 
@@ -167,14 +180,15 @@ A list comp builds the entire filtered list before taking one item; `next()` sho
 
 ```
 .
-├── .github/
-│   └── workflows/
-│       └── ci.yml          # CI pipeline
-├── app.py                  # Routes, event data, logic
-├── test_app.py             # Test suite
+├── .github/workflows/ci.yml   # CI pipeline
+├── templates/
+│   └── index.html             # Frontend UI
+├── app.py                     # Routes, event data, logic
+├── test_app.py                # Test suite
 ├── requirements.txt
 ├── .gitignore
-└── README.md
+├── README.md
+└── PROGRESS.md                # Development log
 ```
 
 <div align="center">
