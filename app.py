@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, abort
+from flask import Flask, jsonify, abort, render_template
 
 app = Flask(__name__)
 
@@ -7,6 +7,9 @@ EVENTS = [
     {"id": 2, "name": "AI Workshop", "seats_total": 30, "seats_left": 0},
 ]
 
+@app.route("/")
+def index():
+    return render_template("index.html")
 
 @app.route("/health")
 def health():
