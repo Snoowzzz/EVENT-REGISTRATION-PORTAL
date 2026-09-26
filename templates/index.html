@@ -23,6 +23,11 @@
       border: 1px solid #ddd;
       border-radius: 12px;
       padding: 16px 20px;
+      transition: box-shadow 0.2s ease, transform 0.2s ease;
+    }
+    .card:hover {
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      transform: translateY(-2px);
     }
     .card-head {
       display: flex;
@@ -46,7 +51,10 @@
       overflow: hidden;
       margin-bottom: 12px;
     }
-    .bar-fill { height: 100%; }
+    .bar-fill {
+      height: 100%;
+      transition: width 0.5s ease;
+    }
     .bar-fill.open { background: #2e7d32; }
     .bar-fill.full { background: #c62828; }
     button {
@@ -57,9 +65,22 @@
       background: #fff;
       cursor: pointer;
       font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
     }
     button:disabled { cursor: not-allowed; opacity: 0.6; }
     button:hover:not(:disabled) { background: #f5f5f5; }
+    .spinner {
+      width: 14px;
+      height: 14px;
+      border: 2px solid #ccc;
+      border-top-color: #333;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
     #toast {
       display: none;
       margin-top: 16px;
@@ -69,6 +90,29 @@
     }
     #toast.success { background: #e6f4ea; color: #1e7e34; }
     #toast.error { background: #fbe9e7; color: #c62828; }
+
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.4);
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+    }
+    .modal-overlay.show { display: flex; }
+    .modal-box {
+      background: #fff;
+      border-radius: 12px;
+      padding: 24px;
+      max-width: 320px;
+      width: 90%;
+    }
+    .modal-box p { margin: 0 0 16px; }
+    .modal-actions { display: flex; gap: 8px; }
+    .modal-actions button { flex: 1; }
+    .modal-actions .confirm { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
+    .modal-actions .confirm:hover { background: #333; }
   </style>
 </head>
 <body>
@@ -79,7 +123,19 @@
   <div class="grid" id="cards"></div>
   <div id="toast"></div>
 
+  <div class="modal-overlay" id="modal">
+    <div class="modal-box">
+      <p id="modal-text"></p>
+      <div class="modal-actions">
+        <button id="modal-cancel">Cancel</button>
+        <button class="confirm" id="modal-confirm">Confirm</button>
+      </div>
+    </div>
+  </div>
+
   <script>
+    let pendingId = null;
+
     async function loadEvents() {
       const res = await fetch('/api/events');
       const events = await res.json();
@@ -105,7 +161,7 @@
           <div class="bar-bg">
             <div class="bar-fill ${full ? 'full' : 'open'}" style="width:${pct}%"></div>
           </div>
-          <button data-id="${ev.id}" ${full ? 'disabled' : ''}>
+          <button data-id="${ev.id}" data-name="${ev.name}" ${full ? 'disabled' : ''}>
             ${full ? 'No seats left' : 'Register'}
           </button>
         `;
@@ -113,9 +169,27 @@
       });
 
       container.querySelectorAll('button[data-id]').forEach(btn => {
-        btn.addEventListener('click', () => register(btn.dataset.id));
+        btn.addEventListener('click', () => openModal(btn.dataset.id, btn.dataset.name));
       });
     }
+
+    function openModal(id, name) {
+      pendingId = id;
+      document.getElementById('modal-text').textContent = `Confirm registration for ${name}?`;
+      document.getElementById('modal').classList.add('show');
+    }
+
+    function closeModal() {
+      document.getElementById('modal').classList.remove('show');
+      pendingId = null;
+    }
+
+    document.getElementById('modal-cancel').addEventListener('click', closeModal);
+    document.getElementById('modal-confirm').addEventListener('click', () => {
+      const id = pendingId;
+      closeModal();
+      register(id);
+    });
 
     function showToast(msg, isError) {
       const t = document.getElementById('toast');
@@ -126,14 +200,20 @@
     }
 
     async function register(id) {
+      const btn = document.querySelector(`button[data-id="${id}"]`);
+      const originalText = btn.textContent;
+      btn.disabled = true;
+      btn.innerHTML = `<span class="spinner"></span> Registering...`;
+
       const res = await fetch(`/register/${id}`, { method: 'POST' });
       const data = await res.json();
+
       if (res.ok) {
         showToast(`Registered. ${data.seats_left} seats left.`, false);
       } else {
         showToast(data.error, true);
       }
-      loadEvents(); // refresh from server, source of truth
+      loadEvents();
     }
 
     loadEvents();
