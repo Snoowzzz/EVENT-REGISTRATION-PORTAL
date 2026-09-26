@@ -3,17 +3,49 @@ from flask import Flask, jsonify, abort, render_template
 app = Flask(__name__)
 
 EVENTS = [
-    {"id": 1, "name": "Hackathon", "seats_total": 50, "seats_left": 50},
-    {"id": 2, "name": "AI Workshop", "seats_total": 30, "seats_left": 0},
-    {"id": 3, "name": "Cloud Computing Bootcamp", "seats_total": 40, "seats_left": 25},
-    {"id": 4, "name": "Startup Pitch Night", "seats_total": 20, "seats_left": 3},
-    {"id": 5, "name": "Web Dev Sprint", "seats_total": 35, "seats_left": 18},
-    {"id": 6, "name": "Cybersecurity CTF", "seats_total": 25, "seats_left": 0},
+    {
+        "id": 1,
+        "name": "Hackathon",
+        "seats_total": 50,
+        "seats_left": 50,
+    },
+    {
+        "id": 2,
+        "name": "AI Workshop",
+        "seats_total": 30,
+        "seats_left": 0,
+    },
+    {
+        "id": 3,
+        "name": "Cloud Computing Bootcamp",
+        "seats_total": 40,
+        "seats_left": 25,
+    },
+    {
+        "id": 4,
+        "name": "Startup Pitch Night",
+        "seats_total": 20,
+        "seats_left": 3,
+    },
+    {
+        "id": 5,
+        "name": "Web Dev Sprint",
+        "seats_total": 35,
+        "seats_left": 18,
+    },
+    {
+        "id": 6,
+        "name": "Cybersecurity CTF",
+        "seats_total": 25,
+        "seats_left": 0,
+    },
 ]
+
 
 @app.route("/")
 def index():
     return render_template("index.html")
+
 
 @app.route("/health")
 def health():
