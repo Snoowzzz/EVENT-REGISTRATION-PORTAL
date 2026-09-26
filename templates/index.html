@@ -4,98 +4,164 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Event Registration Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
+    * { box-sizing: border-box; }
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      max-width: 640px;
-      margin: 40px auto;
-      padding: 0 20px;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      max-width: 760px;
+      margin: 60px auto;
+      padding: 0 24px;
       color: #1a1a1a;
+      background: linear-gradient(180deg, #f5f5ff 0%, #fafafa 220px);
     }
-    h1 { margin-bottom: 4px; }
-    .subtitle { color: #666; font-size: 14px; margin-top: 0; }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #eef2ff;
+      color: #4338ca;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 5px 12px;
+      border-radius: 20px;
+      margin-bottom: 14px;
+      letter-spacing: 0.2px;
+    }
+    h1 {
+      font-size: 32px;
+      font-weight: 700;
+      margin: 0 0 8px;
+      letter-spacing: -0.5px;
+    }
+    .subtitle {
+      color: #6b7280;
+      font-size: 15px;
+      margin: 0 0 32px;
+    }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+    .stat {
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      padding: 14px 16px;
+    }
+    .stat-label { font-size: 12px; color: #6b7280; margin: 0 0 4px; }
+    .stat-value { font-size: 22px; font-weight: 700; margin: 0; }
     .grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 12px;
+      gap: 16px;
     }
     .card {
-      border: 1px solid #ddd;
-      border-radius: 12px;
-      padding: 16px 20px;
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 16px;
+      padding: 20px 22px;
       transition: box-shadow 0.2s ease, transform 0.2s ease;
     }
     .card:hover {
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.06);
       transform: translateY(-2px);
     }
+    .card.full { opacity: 0.75; }
     .card-head {
       display: flex;
       justify-content: space-between;
       align-items: start;
-      margin-bottom: 10px;
+      margin-bottom: 14px;
     }
-    .name { font-weight: 600; margin: 0; }
-    .seats { font-size: 13px; color: #666; margin: 2px 0 0; }
+    .name {
+      font-weight: 600;
+      font-size: 16px;
+      margin: 0;
+      letter-spacing: -0.2px;
+    }
+    .seats {
+      font-size: 13px;
+      color: #6b7280;
+      margin: 4px 0 0;
+    }
     .badge {
-      font-size: 12px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.3px;
       padding: 4px 10px;
-      border-radius: 6px;
+      border-radius: 20px;
+      white-space: nowrap;
     }
-    .badge.open { background: #e6f4ea; color: #1e7e34; }
-    .badge.full { background: #fbe9e7; color: #c62828; }
+    .badge.open { background: #dcfce7; color: #15803d; }
+    .badge.full { background: #fee2e2; color: #b91c1c; }
     .bar-bg {
-      height: 6px;
-      background: #eee;
-      border-radius: 4px;
+      height: 5px;
+      background: #f3f4f6;
+      border-radius: 10px;
       overflow: hidden;
-      margin-bottom: 12px;
+      margin-bottom: 18px;
     }
     .bar-fill {
       height: 100%;
+      border-radius: 10px;
       transition: width 0.5s ease;
     }
-    .bar-fill.open { background: #2e7d32; }
-    .bar-fill.full { background: #c62828; }
+    .bar-fill.open { background: #16a34a; }
+    .bar-fill.full { background: #dc2626; }
     button {
       width: 100%;
-      padding: 8px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid #d1d5db;
       background: #fff;
       cursor: pointer;
+      font-family: inherit;
       font-size: 14px;
+      font-weight: 500;
+      color: #1a1a1a;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
+      transition: background 0.15s ease;
     }
     button:disabled { cursor: not-allowed; opacity: 0.6; }
-    button:hover:not(:disabled) { background: #f5f5f5; }
+    button:hover:not(:disabled) { background: #f9fafb; border-color: #9ca3af; }
+    .card:not(.full) button {
+      background: #1a1a1a;
+      color: #fff;
+      border-color: #1a1a1a;
+    }
+    .card:not(.full) button:hover:not(:disabled) { background: #333; }
     .spinner {
       width: 14px;
       height: 14px;
-      border: 2px solid #ccc;
-      border-top-color: #333;
+      border: 2px solid rgba(255,255,255,0.4);
+      border-top-color: #fff;
       border-radius: 50%;
       animation: spin 0.6s linear infinite;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
     #toast {
       display: none;
-      margin-top: 16px;
-      padding: 10px 14px;
-      border-radius: 8px;
+      margin-top: 20px;
+      padding: 12px 16px;
+      border-radius: 10px;
       font-size: 14px;
+      font-weight: 500;
     }
-    #toast.success { background: #e6f4ea; color: #1e7e34; }
-    #toast.error { background: #fbe9e7; color: #c62828; }
-
+    #toast.success { background: #dcfce7; color: #15803d; }
+    #toast.error { background: #fee2e2; color: #b91c1c; }
     .modal-overlay {
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.4);
+      background: rgba(0,0,0,0.45);
       align-items: center;
       justify-content: center;
       z-index: 10;
@@ -103,25 +169,35 @@
     .modal-overlay.show { display: flex; }
     .modal-box {
       background: #fff;
-      border-radius: 12px;
-      padding: 24px;
+      border-radius: 16px;
+      padding: 26px;
       max-width: 320px;
       width: 90%;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.2);
     }
-    .modal-box p { margin: 0 0 16px; }
+    .modal-box p { margin: 0 0 18px; font-size: 15px; }
     .modal-actions { display: flex; gap: 8px; }
-    .modal-actions button { flex: 1; }
+    .modal-actions button { flex: 1; background: #fff; color: #1a1a1a; border-color: #d1d5db; }
     .modal-actions .confirm { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
     .modal-actions .confirm:hover { background: #333; }
+    footer {
+      margin-top: 48px;
+      text-align: center;
+      font-size: 12px;
+      color: #9ca3af;
+    }
   </style>
 </head>
 <body>
 
-  <h1>Event Registration Portal</h1>
-  <p class="subtitle">Live seat availability, updates instantly on registration.</p>
-
+  <div class="eyebrow">● Live registration</div>
+  <h1>Event registration portal</h1>
+  <p class="subtitle">Browse open events and reserve your seat in real time.</p>
+  <div class="stats" id="stats"></div>
   <div class="grid" id="cards"></div>
   <div id="toast"></div>
+
+  <footer>Built with Flask · Deployed on Render</footer>
 
   <div class="modal-overlay" id="modal">
     <div class="modal-box">
@@ -139,24 +215,42 @@
     async function loadEvents() {
       const res = await fetch('/api/events');
       const events = await res.json();
+      renderStats(events);
       renderEvents(events);
+    }
+
+    function renderStats(events) {
+      const totalEvents = events.length;
+      const totalSeats = events.reduce((sum, e) => sum + e.seats_total, 0);
+      const seatsLeft = events.reduce((sum, e) => sum + e.seats_left, 0);
+      document.getElementById('stats').innerHTML = `
+        <div class="stat"><p class="stat-label">Events</p><p class="stat-value">${totalEvents}</p></div>
+        <div class="stat"><p class="stat-label">Total seats</p><p class="stat-value">${totalSeats}</p></div>
+        <div class="stat"><p class="stat-label">Seats left</p><p class="stat-value">${seatsLeft}</p></div>
+      `;
     }
 
     function renderEvents(events) {
       const container = document.getElementById('cards');
       container.innerHTML = '';
+
+      if (events.length === 0) {
+        container.innerHTML = `<p style="color:#6b7280; font-size:14px;">No events available right now.</p>`;
+        return;
+      }
+
       events.forEach(ev => {
         const pct = Math.round((ev.seats_left / ev.seats_total) * 100);
         const full = ev.seats_left <= 0;
         const card = document.createElement('div');
-        card.className = 'card';
+        card.className = `card ${full ? 'full' : ''}`;
         card.innerHTML = `
           <div class="card-head">
             <div>
               <p class="name">${ev.name}</p>
               <p class="seats">${ev.seats_left} of ${ev.seats_total} seats left</p>
             </div>
-            <span class="badge ${full ? 'full' : 'open'}">${full ? 'Full' : 'Open'}</span>
+            <span class="badge ${full ? 'full' : 'open'}">${full ? 'FULL' : 'OPEN'}</span>
           </div>
           <div class="bar-bg">
             <div class="bar-fill ${full ? 'full' : 'open'}" style="width:${pct}%"></div>
@@ -201,7 +295,6 @@
 
     async function register(id) {
       const btn = document.querySelector(`button[data-id="${id}"]`);
-      const originalText = btn.textContent;
       btn.disabled = true;
       btn.innerHTML = `<span class="spinner"></span> Registering...`;
 
