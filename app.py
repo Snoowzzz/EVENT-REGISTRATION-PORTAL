@@ -1,6 +1,8 @@
+import os
 from flask import Flask, jsonify, abort, render_template
 
 app = Flask(__name__)
+COMMIT = os.getenv("RENDER_GIT_COMMIT", "local")[:7]
 
 EVENTS = [
     {
@@ -44,7 +46,7 @@ EVENTS = [
 
 @app.route("/")
 def index():
-    return render_template("index.html")
+    return render_template("index.html", commit=COMMIT)
 
 
 @app.route("/health")
