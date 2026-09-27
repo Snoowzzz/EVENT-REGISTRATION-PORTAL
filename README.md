@@ -107,6 +107,8 @@ A lightweight, dependency-free UI lives at the root route (`/`), served via Flas
 
 Built with plain HTML, CSS, and vanilla JavaScript — no framework, no build step. All data comes from the same `/api/events` and `/register/<id>` endpoints documented above; the frontend is a thin client, not a separate source of truth.
 
+- Footer displays the live deployed commit hash (via `RENDER_GIT_COMMIT`), so you can always verify the running version matches the latest pipeline run
+
 ## 🚀 Running Locally
 
 ```bash
@@ -147,11 +149,11 @@ All 4 tests use Flask's in-process `test_client()` — fast, isolated, no real n
 
 Defined in [`.github/workflows/ci.yml`](.github/workflows/ci.yml)
 
-**Triggers:** every push/PR to `main`
-**Steps:** checkout → set up Python 3.13 → install deps → `flake8` → `pytest -v`
+**Two-stage pipeline:**
+1. **`test`** — runs on every push and pull request to `main`: checkout → set up Python 3.13 → install deps → `flake8` → `pytest -v`
+2. **`deploy`** — runs *only* if `test` succeeds, and *only* on a direct push to `main` (not on pull requests). Triggers a live deployment by calling Render's deploy hook via `curl`, using a secret (`RENDER_DEPLOY_HOOK`) stored in GitHub Secrets — never exposed in the workflow file itself.
 
-Runs on a **clean, disposable Ubuntu VM** with nothing pre-installed — a passing run proves `requirements.txt` is complete, not just "works on my machine." Render auto-deploys separately from the same repo on every push to `main`.
-
+Render's own Auto-Deploy is turned **off** — the only way this app ever redeploys is through this pipeline, which means a failing test genuinely blocks deployment rather than just being a warning.
 ---
 
 ## 🎯 Design Decisions
